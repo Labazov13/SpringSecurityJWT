@@ -1,0 +1,22 @@
+spring:
+  application:
+    name: SpringSecurityJWT
+  datasource:
+    url: jdbc:postgresql://localhost:5432/postgres
+    username: postgres
+    password: 1
+    driver-class-name: org.postgresql.Driver
+  jpa:
+    database: postgresql
+    database-platform: org.hibernate.dialect.PostgreSQLDialect
+    show-sql: true
+  main:
+    allow-bean-definition-overriding: true
+    allow-circular-references: true
+  liquibase:
+    change-log: db/changelog/db.changelog-master.yaml
+    enabled: true
+testing:
+  app:
+    secret: qBTmv4oXFFR2GwjexDJ4t6fsIUIUhhXqlktXjXdkcyygs8nPVEwMfo29VDRRepYDVV5IkIxBMzr7OEHXEHd37w==
+    expirationMs: 60000
