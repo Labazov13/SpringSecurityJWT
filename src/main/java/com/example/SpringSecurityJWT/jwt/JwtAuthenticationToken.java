@@ -6,7 +6,7 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.stereotype.Component;
 
 import java.util.Collection;
-@Component
+
 public class JwtAuthenticationToken extends UsernamePasswordAuthenticationToken {
 
     public JwtAuthenticationToken(CustomUserDetails principal, String credentials, Collection<? extends GrantedAuthority> authorities) {
