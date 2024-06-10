@@ -2,6 +2,7 @@ package com.example.SpringSecurityJWT.configuration;
 
 import com.example.SpringSecurityJWT.jwt.JwtAuthenticationFilter;
 import com.example.SpringSecurityJWT.jwt.JwtAuthenticationProvider;
+import com.example.SpringSecurityJWT.jwt.JwtUtil;
 import com.example.SpringSecurityJWT.service.CustomUserDetailsService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
@@ -29,6 +30,7 @@ import org.springframework.web.cors.CorsConfiguration;
 public class SecurityConfig {
     @Autowired
     private JwtAuthenticationProvider provider;
+
 
     @Bean
     public PasswordEncoder passwordEncoder() {

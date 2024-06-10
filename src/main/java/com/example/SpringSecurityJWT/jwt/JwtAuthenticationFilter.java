@@ -1,7 +1,7 @@
 package com.example.SpringSecurityJWT.jwt;
 
+import com.example.SpringSecurityJWT.configuration.AppProperties;
 import com.example.SpringSecurityJWT.service.CustomUserDetails;
-import com.example.SpringSecurityJWT.service.CustomUserDetailsService;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import jakarta.servlet.FilterChain;
@@ -9,8 +9,6 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
@@ -22,11 +20,12 @@ import java.util.Date;
 @Component
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
     @Autowired
-    private JwtUtil jwtUtil;
+    private JwtUtil jwtUtil = new JwtUtil();
     @Autowired
-    private CustomUserDetailsService customUserDetailsService;
-    @Autowired
-    private AuthenticationManager authenticationManager;
+    private AppProperties appProperties = new AppProperties();
+    public String getSecret(){
+        return appProperties.getSecret();
+    }
 
 
     @Override
@@ -40,8 +39,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         filterChain.doFilter(request, response);
     }
 
-    private String extractTokenFromRequest(HttpServletRequest request) {
-        // Логика извлечения токена из запроса (например, из заголовка Authorization)
+    public String extractTokenFromRequest(HttpServletRequest request) {
         String headerAuth = request.getHeader("Authorization");
         if (headerAuth != null && headerAuth.startsWith("Bearer ")) {
             return headerAuth.substring(7);
@@ -49,19 +47,19 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         return null;
     }
 
-    private boolean validateToken(String token) {
-        // Логика верификации токена
-        Claims claims = Jwts.parser().setSigningKey(jwtUtil.getSecret()).parseClaimsJws(token).getBody();
+    public boolean validateToken(String token) {
+        String secret = getSecret();
+        Claims claims = Jwts.parser().setSigningKey(secret).parseClaimsJws(token).getBody();
         Date expirationDate = claims.getExpiration();
         return !expirationDate.before(new Date());
     }
 
-    private Authentication createAuthentication(String token) {
+    public Authentication createAuthentication(String token) {
         // Логика создания объекта Authentication на основе токена
         CustomUserDetails userDetails = extractUserDetailsFromToken(token);
         return new JwtAuthenticationToken(userDetails, token, userDetails.getAuthorities());
     }
-    private CustomUserDetails extractUserDetailsFromToken(String token) {
+    public CustomUserDetails extractUserDetailsFromToken(String token) {
         // Логика извлечения информации о пользователе из токена
         return jwtUtil.extractUserDetailsFromToken(token);
     }
