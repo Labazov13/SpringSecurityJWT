@@ -5,6 +5,8 @@ import com.example.SpringSecurityJWT.jwt.JwtUtil;
 import com.example.SpringSecurityJWT.model.Person;
 import com.example.SpringSecurityJWT.repository.UserRepository;
 import com.example.SpringSecurityJWT.service.CustomUserDetailsService;
+import com.example.SpringSecurityJWT.views.Views;
+import com.fasterxml.jackson.annotation.JsonView;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -26,14 +28,14 @@ public class SecurityController {
     }
 
     @PostMapping(value = "/signup")
+    @JsonView(Views.PersonSummary.class)
     public ResponseEntity<?> signup(@RequestBody RequestDTO signupDTO) {
         return ResponseEntity.ok(userService.createPerson(signupDTO));
     }
 
     @PostMapping(value = "/signin")
     public ResponseEntity<?> signin(@RequestBody RequestDTO requestDTO) {
-        //Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-        Person person = repository.findByUsername(requestDTO.username()).get();
+        Person person = userService.findByUsername(requestDTO.username());
         UserDetails userDetails = userService.loadUserByUsername(requestDTO.username());
         if (userDetails.getUsername().equals(person.getUsername())) {
             String token = jwtUtil.generateToken(userDetails);

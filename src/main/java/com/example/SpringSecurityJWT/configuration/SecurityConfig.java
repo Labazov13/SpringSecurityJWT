@@ -2,7 +2,6 @@ package com.example.SpringSecurityJWT.configuration;
 
 import com.example.SpringSecurityJWT.jwt.JwtAuthenticationFilter;
 import com.example.SpringSecurityJWT.jwt.JwtAuthenticationProvider;
-import com.example.SpringSecurityJWT.jwt.JwtUtil;
 import com.example.SpringSecurityJWT.service.CustomUserDetailsService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
@@ -33,6 +32,16 @@ public class SecurityConfig {
 
 
     @Bean
+    public AppProperties appProperties(){
+        return new AppProperties();
+    }
+    @Bean
+    public JwtAuthenticationFilter jwtAuthenticationFilter(){
+        return new JwtAuthenticationFilter();
+    }
+
+
+    @Bean
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
     }
@@ -46,6 +55,8 @@ public class SecurityConfig {
     public AuthenticationManager authenticationManager(AuthenticationConfiguration authenticationConfiguration) throws Exception {
         return authenticationConfiguration.getAuthenticationManager();
     }
+
+
 
     @Bean
     public AuthenticationProvider authenticationProvider(AuthenticationProvider authenticationProvider) {
@@ -64,9 +75,9 @@ public class SecurityConfig {
                 .cors(httpSecurityCorsConfigurer -> httpSecurityCorsConfigurer.configurationSource(request ->
                         new CorsConfiguration().applyPermitDefaultValues()))
                 .authorizeHttpRequests(authorize -> authorize
-                        .requestMatchers(HttpMethod.GET, "/secured/**").authenticated()
-                        .requestMatchers(HttpMethod.POST, "/auth/**").permitAll())
-                .addFilterBefore(new JwtAuthenticationFilter(), UsernamePasswordAuthenticationFilter.class)
+                        .requestMatchers(HttpMethod.POST, "/auth/**").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/secured/**").authenticated())
+                .addFilterBefore(jwtAuthenticationFilter(), UsernamePasswordAuthenticationFilter.class)
                 .exceptionHandling(exceptions -> exceptions.authenticationEntryPoint(new HttpStatusEntryPoint(HttpStatus.UNAUTHORIZED)));
 
         return http.build();

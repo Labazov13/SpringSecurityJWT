@@ -1,5 +1,7 @@
 package com.example.SpringSecurityJWT.model;
 
+import com.example.SpringSecurityJWT.views.Views;
+import com.fasterxml.jackson.annotation.JsonView;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -13,7 +15,9 @@ import lombok.NoArgsConstructor;
 public class Person {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @JsonView(Views.PersonSummary.class)
     private Long id;
+    @JsonView(Views.PersonSummary.class)
     private String username;
     private String password;
     private String role;

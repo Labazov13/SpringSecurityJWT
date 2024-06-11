@@ -19,4 +19,4 @@ spring:
 testing:
   app:
     secret: qBTmv4oXFFR2GwjexDJ4t6fsIUIUhhXqlktXjXdkcyygs8nPVEwMfo29VDRRepYDVV5IkIxBMzr7OEHXEHd37w==
-    expiration: 60000
+    expiration: 600000

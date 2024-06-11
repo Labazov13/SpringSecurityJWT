@@ -13,26 +13,23 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
-
 import java.io.IOException;
 import java.util.Date;
 
 @Component
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
     @Autowired
-    private JwtUtil jwtUtil = new JwtUtil();
+    private JwtUtil jwtUtil;
     @Autowired
-    private AppProperties appProperties = new AppProperties();
-    public String getSecret(){
-        return appProperties.getSecret();
-    }
+    private AppProperties appProperties;
+
 
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
             throws ServletException, IOException {
         String token = extractTokenFromRequest(request);
-        if (token != null && validateToken(token)) {
+        if (token != null && jwtUtil.validateToken(token)) {
             Authentication auth = createAuthentication(token);
             SecurityContextHolder.getContext().setAuthentication(auth);
         }
@@ -48,19 +45,18 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     }
 
     public boolean validateToken(String token) {
-        String secret = getSecret();
+        String secret = appProperties.getSecret();
+        logger.info(secret);
         Claims claims = Jwts.parser().setSigningKey(secret).parseClaimsJws(token).getBody();
         Date expirationDate = claims.getExpiration();
         return !expirationDate.before(new Date());
     }
 
     public Authentication createAuthentication(String token) {
-        // Логика создания объекта Authentication на основе токена
         CustomUserDetails userDetails = extractUserDetailsFromToken(token);
         return new JwtAuthenticationToken(userDetails, token, userDetails.getAuthorities());
     }
     public CustomUserDetails extractUserDetailsFromToken(String token) {
-        // Логика извлечения информации о пользователе из токена
         return jwtUtil.extractUserDetailsFromToken(token);
     }
 }

@@ -15,7 +15,6 @@ public class MainController {
     @GetMapping(value = "/user")
     public ResponseEntity<String> getInfo(Principal principal){
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-
-        return ResponseEntity.ok(auth.getName());
+        return ResponseEntity.ok("Your name: " + auth.getName());
     }
 }

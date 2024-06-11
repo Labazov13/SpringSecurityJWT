@@ -33,4 +33,8 @@ public class CustomUserDetailsService implements UserDetailsService {
         Person person = new Person(signupDTO.username(), passwordEncoder.encode(signupDTO.password()), "ROLE_USER");
         return userRepository.save(person);
     }
+
+    public Person findByUsername(String username){
+        return userRepository.findByUsername(username).orElseThrow(() -> new UsernameNotFoundException("Person not found"));
+    }
 }
