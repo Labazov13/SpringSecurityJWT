@@ -8,7 +8,7 @@
                 <constraints primaryKey="true" nullable="false" unique="true"/>
             </column>
             <column name="username" type="VARCHAR(255)">
-                <constraints nullable="false"/>
+                <constraints nullable="false" unique="true"/>
             </column>
             <column name="password" type="VARCHAR(255)">
                 <constraints nullable="false"/>
@@ -16,6 +16,11 @@
             <column name="role" type="VARCHAR(255)">
                 <constraints nullable="false"/>
             </column>
+            <column name="block" type="BOOLEAN">
+                <constraints nullable="true"/>
+            </column>
+            <column name="block_time" type="TIMESTAMP"/>
+            <column name="attempt_entry" type="INTEGER"/>
         </createTable>
     </changeSet>
 </databaseChangeLog>

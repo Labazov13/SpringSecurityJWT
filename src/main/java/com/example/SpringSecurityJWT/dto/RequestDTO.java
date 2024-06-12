@@ -1,4 +1,4 @@
 package com.example.SpringSecurityJWT.dto;
 
-public record RequestDTO(String username, String password) {
+public record RequestDTO(String username, String password, String role) {
 }
