@@ -3,6 +3,7 @@ package com.example.SpringSecurityJWT.service;
 import com.example.SpringSecurityJWT.dto.RequestDTO;
 import com.example.SpringSecurityJWT.model.Person;
 import com.example.SpringSecurityJWT.repository.UserRepository;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.LockedException;
 import org.springframework.security.core.userdetails.User;
@@ -11,6 +12,9 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 
 @Service
 public class CustomUserDetailsService implements UserDetailsService {
@@ -20,13 +24,18 @@ public class CustomUserDetailsService implements UserDetailsService {
     private PasswordEncoder passwordEncoder;
     @Autowired
     private BlockingService blockingService;
+    private static final Logger logger = LoggerFactory.getLogger(CustomUserDetailsService.class);
 
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
+        logger.info(String.format("A user named %s logs in", username));
         Person person = userRepository.findByUsername(username)
-                .orElseThrow(() -> new UsernameNotFoundException("Person not found"));
-        if (blockingService.isBlockedPerson(person)){
+                .orElseThrow(() -> {
+                    logger.warn(String.format("User name %s not found", username));
+                    return new UsernameNotFoundException("Person not found");
+                });
+        if (blockingService.isBlockedPerson(person)) {
             throw new LockedException("Person is blocked");
         }
         return new User(person.getUsername(), person.getPassword(), person.getAuthorities());
@@ -48,7 +57,7 @@ public class CustomUserDetailsService implements UserDetailsService {
         return userRepository.findByUsername(username).orElseThrow(() -> new UsernameNotFoundException("Person not found"));
     }
 
-    public boolean checkPassword(String requestPassword, String password){
+    public boolean checkPassword(String requestPassword, String password) {
         return passwordEncoder.matches(requestPassword, password);
     }
 
